@@ -1,6 +1,8 @@
 package com.idat.SetiembreIIIE.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "productos")
@@ -13,6 +15,27 @@ public class Producto {
     private String descripcion;
     private Double precio;
     private Integer stock;
+
+    @OneToOne
+    private Proveedor proveedor;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "producto_cliente",
+            joinColumns = @JoinColumn(
+                    name = "id_producto",
+                    nullable = false,
+                    unique = true,
+                    foreignKey = @ForeignKey(foreignKeyDefinition = "foreign key(id_producto) references productos(id_producto)")
+            ),
+            inverseJoinColumns = @JoinColumn(
+                    name = "id_cliente",
+                    nullable = false,
+                    unique = true,
+                    foreignKey = @ForeignKey(foreignKeyDefinition = "foreign key(id_cliente) references clientes(id_cliente)")
+            )
+    )
+    private List<Cliente> clientes = new ArrayList<>();
 
     public Producto() {
         super();
