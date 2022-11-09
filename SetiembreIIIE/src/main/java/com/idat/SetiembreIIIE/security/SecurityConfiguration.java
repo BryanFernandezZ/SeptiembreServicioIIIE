@@ -15,6 +15,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -65,12 +67,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailService service;
 
-    @Autowired
-    private TokenFilter filter;
-
-    @Autowired
-    private EntryPoint entrypoint;
-
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         // TODO Auto-generated method stub
@@ -78,6 +74,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Override
+    @Bean
     protected AuthenticationManager authenticationManager() throws Exception {
         // TODO Auto-generated method stub
         return super.authenticationManager();
@@ -99,23 +96,31 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //                .httpBasic()
 //                .and()
 //                .csrf().disable();
-        http.authorizeRequests()
-                .antMatchers("/crearToken").permitAll()
-                .anyRequest()
-                .authenticated()
-                .and()
-                .exceptionHandling()
-                .authenticationEntryPoint(entrypoint)
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
-                .csrf().disable();
+
+
+//        http.authorizeRequests()
+//                .antMatchers("/crearToken").permitAll()
+//                .anyRequest()
+//                .authenticated()
+//                .and()
+//                .exceptionHandling()
+//                .authenticationEntryPoint(entrypoint)
+//                .and()
+//                .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .and()
+//                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
+//                .csrf().disable();
+        http.anonymous().disable();
     }
 
     @Bean
     public PasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public TokenStore tokenStore() {
+        return new InMemoryTokenStore();
     }
 }
